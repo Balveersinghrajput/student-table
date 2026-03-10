@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateStudentDto } from './dto/create-student.dto';
@@ -29,6 +29,10 @@ export class StudentsService {
   }
 
   async create(dto: CreateStudentDto): Promise<Student> {
+    const existing = await this.studentRepo.findOneBy({ studentId: dto.studentId });
+    if (existing) {
+      throw new ConflictException(`Student with ID '${dto.studentId}' already exists`);
+    }
     const student = this.studentRepo.create({
       ...dto,
       status: dto.status || 'Active',
@@ -52,6 +56,13 @@ export class StudentsService {
     const entities = students.map((dto) =>
       this.studentRepo.create({ ...dto, status: dto.status || 'Active' }),
     );
-    return this.studentRepo.save(entities);
+    try {
+      return await this.studentRepo.save(entities);
+    } catch (error) {
+      if (error.code === '23505') {
+        throw new ConflictException('One or more students have duplicate student IDs');
+      }
+      throw error;
+    }
   }
 }

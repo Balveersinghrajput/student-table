@@ -37,6 +37,10 @@ let StudentsService = class StudentsService {
         return student;
     }
     async create(dto) {
+        const existing = await this.studentRepo.findOneBy({ studentId: dto.studentId });
+        if (existing) {
+            throw new common_1.ConflictException(`Student with ID '${dto.studentId}' already exists`);
+        }
         const student = this.studentRepo.create({
             ...dto,
             status: dto.status || 'Active',
@@ -55,7 +59,15 @@ let StudentsService = class StudentsService {
     }
     async bulkImport(students) {
         const entities = students.map((dto) => this.studentRepo.create({ ...dto, status: dto.status || 'Active' }));
-        return this.studentRepo.save(entities);
+        try {
+            return await this.studentRepo.save(entities);
+        }
+        catch (error) {
+            if (error.code === '23505') {
+                throw new common_1.ConflictException('One or more students have duplicate student IDs');
+            }
+            throw error;
+        }
     }
 };
 exports.StudentsService = StudentsService;
