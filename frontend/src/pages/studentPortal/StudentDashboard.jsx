@@ -1,24 +1,39 @@
 import "./StudentDashboard.css";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useAuth } from "../../context/AuthContext";
-import { useStudents } from "../../context/StudentContext";
 import { ranking } from "../../utils/ranking";
+import { authService } from "../../services/authService";
 import Avatar from "../../components/common/Avatar";
+import Loader from "../../components/common/Loader";
 
 export default function StudentDashboard() {
-  const { studentSession, studentLogout } = useAuth();
-  const { students } = useStudents();
+  const { studentSession, studentLogin, studentLogout } = useAuth();
+  const [myData, setMyData] = useState(studentSession);
+  const [loadingData, setLoadingData] = useState(true);
   const navigate = useNavigate();
 
   const handleLogout = () => { studentLogout(); toast.success("Logged out"); navigate("/student-login"); };
 
+  // Fetch fresh student data on mount and after refresh
+  useEffect(() => {
+    if (!studentSession) return;
+    setLoadingData(true);
+    authService.studentLogin(studentSession.studentId)
+      .then((data) => {
+        setMyData(data.student);
+        studentLogin(data.student);
+      })
+      .catch(() => {
+        setMyData(studentSession);
+      })
+      .finally(() => setLoadingData(false));
+  }, [studentSession?.id]);
+
   if (!studentSession) return null;
-
-  const ranked = ranking.getRankedList(students);
-  const myData = ranked.find((s) => s.studentId === studentSession.studentId);
-
+  if (loadingData) return <Loader text="Loading your profile..." />;
   if (!myData) return (
     <div style={{ minHeight: "100vh", background: "#f8fafc", display: "flex", alignItems: "center", justifyContent: "center" }}>
       <p style={{ color: "#64748b", fontSize: 13 }}>Student data not found.</p>
@@ -74,7 +89,7 @@ export default function StudentDashboard() {
             { label: "Total Marks", value: total, sub: "/ 400", color: "#3b82f6" },
             { label: "Average", value: average, sub: "per subject", color: "#06b6d4" },
             { label: "Attendance", value: myData.attendance + "%", sub: "overall", color: "#10b981" },
-            { label: "Class Rank", value: ranking.getMedalEmoji(myData.rank), sub: "#" + myData.rank + " of " + ranked.length, color: "#f59e0b" },
+            { label: "Grade", value: grade, sub: "performance", color: gradeColor },
           ].map((item) => (
             <div className="stat-card" key={item.label} style={{ textAlign: "center" }}>
               <div className="stat-value" style={{ color: item.color }}>{item.value}</div>
