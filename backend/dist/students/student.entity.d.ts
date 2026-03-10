@@ -1,3 +1,4 @@
+import { Teacher } from '../teachers/teacher.entity';
 export declare class Student {
     id: number;
     studentId: string;
@@ -17,6 +18,8 @@ export declare class Student {
     attendance: number;
     status: string;
     profilePhoto: string;
+    teacher: Teacher;
+    teacherId: number;
     createdAt: Date;
     updatedAt: Date;
 }

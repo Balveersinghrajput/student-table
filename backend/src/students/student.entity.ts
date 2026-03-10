@@ -2,9 +2,11 @@ import {
     Column,
     CreateDateColumn,
     Entity,
+    ManyToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
+import { Teacher } from '../teachers/teacher.entity';
 
 @Entity('students')
 export class Student {
@@ -61,6 +63,12 @@ export class Student {
 
   @Column({ nullable: true })
   profilePhoto: string;
+
+  @ManyToOne(() => Teacher, (teacher) => teacher.students, { nullable: true, onDelete: 'SET NULL' })
+  teacher: Teacher;
+
+  @Column({ nullable: true })
+  teacherId: number;
 
   @CreateDateColumn()
   createdAt: Date;

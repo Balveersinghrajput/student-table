@@ -15,11 +15,13 @@ const config_1 = require("@nestjs/config");
 const jwt_1 = require("@nestjs/jwt");
 const bcrypt = require("bcrypt");
 const students_service_1 = require("../students/students.service");
+const teachers_service_1 = require("../teachers/teachers.service");
 let AuthService = class AuthService {
-    constructor(jwtService, configService, studentsService) {
+    constructor(jwtService, configService, studentsService, teachersService) {
         this.jwtService = jwtService;
         this.configService = configService;
         this.studentsService = studentsService;
+        this.teachersService = teachersService;
         this.adminEmail = this.configService.get('ADMIN_EMAIL');
         const plainPassword = this.configService.get('ADMIN_PASSWORD');
         this.adminPasswordHash = bcrypt.hashSync(plainPassword, 10);
@@ -35,6 +37,27 @@ let AuthService = class AuthService {
         const payload = { sub: 'admin', email, role: 'admin' };
         return {
             token: this.jwtService.sign(payload),
+            role: 'admin',
+            message: 'Login successful',
+        };
+    }
+    async teacherRegister(dto) {
+        const teacher = await this.teachersService.register(dto);
+        const payload = { sub: teacher.id, email: teacher.email, role: 'teacher', name: teacher.name };
+        return {
+            token: this.jwtService.sign(payload),
+            role: 'teacher',
+            teacher: { id: teacher.id, name: teacher.name, email: teacher.email },
+            message: 'Registration successful',
+        };
+    }
+    async teacherLogin(email, password) {
+        const teacher = await this.teachersService.validateCredentials(email, password);
+        const payload = { sub: teacher.id, email: teacher.email, role: 'teacher', name: teacher.name };
+        return {
+            token: this.jwtService.sign(payload),
+            role: 'teacher',
+            teacher: { id: teacher.id, name: teacher.name, email: teacher.email },
             message: 'Login successful',
         };
     }
@@ -51,6 +74,7 @@ exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [jwt_1.JwtService,
         config_1.ConfigService,
-        students_service_1.StudentsService])
+        students_service_1.StudentsService,
+        teachers_service_1.TeachersService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

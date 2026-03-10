@@ -4,6 +4,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { Student } from './students/student.entity';
 import { StudentsModule } from './students/students.module';
+import { Teacher } from './teachers/teacher.entity';
+import { TeachersModule } from './teachers/teachers.module';
 
 @Module({
   imports: [
@@ -18,11 +20,12 @@ import { StudentsModule } from './students/students.module';
         username: config.get<string>('DB_USERNAME', 'postgres'),
         password: config.get<string>('DB_PASSWORD', 'postgres'),
         database: config.get<string>('DB_NAME', 'student_db'),
-        entities: [Student],
-        synchronize: true, // auto-create tables (dev only)
+        entities: [Student, Teacher],
+        synchronize: true,
       }),
     }),
     StudentsModule,
+    TeachersModule,
     AuthModule,
   ],
 })

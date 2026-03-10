@@ -10,11 +10,14 @@ const menuItems = [
 ];
 
 export default function Sidebar({ isOpen, onClose }) {
-  const { adminLogout } = useAuth();
+  const { isAdminLoggedIn, isTeacherLoggedIn, teacherSession, adminLogout, teacherLogout } = useAuth();
   const navigate = useNavigate();
 
+  const panelLabel = isAdminLoggedIn ? "Admin Panel" : (teacherSession?.name || "Teacher Panel");
+
   const handleLogout = () => {
-    adminLogout();
+    if (isAdminLoggedIn) adminLogout();
+    if (isTeacherLoggedIn) teacherLogout();
     toast.success("Logged out successfully");
     navigate("/admin-login");
   };
@@ -35,7 +38,7 @@ export default function Sidebar({ isOpen, onClose }) {
             <div className="sidebar-logo-icon">🎓</div>
             <div>
               <div className="sidebar-logo-text">EduTrack</div>
-              <div className="sidebar-logo-sub">Admin Panel</div>
+              <div className="sidebar-logo-sub">{panelLabel}</div>
             </div>
           </div>
           <button className="sidebar-close" onClick={onClose}>✕</button>

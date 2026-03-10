@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateStudentDto } from './dto/create-student.dto';
@@ -12,13 +12,17 @@ export class StudentsService {
     private readonly studentRepo: Repository<Student>,
   ) {}
 
-  async findAll(): Promise<Student[]> {
-    return this.studentRepo.find({ order: { createdAt: 'DESC' } });
+  async findAll(teacherId?: number): Promise<Student[]> {
+    const where = teacherId ? { teacherId } : {};
+    return this.studentRepo.find({ where, order: { createdAt: 'DESC' } });
   }
 
-  async findById(id: number): Promise<Student> {
+  async findById(id: number, teacherId?: number): Promise<Student> {
     const student = await this.studentRepo.findOneBy({ id });
     if (!student) throw new NotFoundException('Student not found');
+    if (teacherId && student.teacherId !== teacherId) {
+      throw new ForbiddenException('You can only access your own students');
+    }
     return student;
   }
 
@@ -28,7 +32,7 @@ export class StudentsService {
     return student;
   }
 
-  async create(dto: CreateStudentDto): Promise<Student> {
+  async create(dto: CreateStudentDto, teacherId?: number): Promise<Student> {
     const existing = await this.studentRepo.findOneBy({ studentId: dto.studentId });
     if (existing) {
       throw new ConflictException(`Student with ID '${dto.studentId}' already exists`);
@@ -36,25 +40,26 @@ export class StudentsService {
     const student = this.studentRepo.create({
       ...dto,
       status: dto.status || 'Active',
+      teacherId: teacherId || null,
     });
     return this.studentRepo.save(student);
   }
 
-  async update(id: number, dto: UpdateStudentDto): Promise<Student> {
-    const student = await this.findById(id);
+  async update(id: number, dto: UpdateStudentDto, teacherId?: number): Promise<Student> {
+    const student = await this.findById(id, teacherId);
     Object.assign(student, dto);
     return this.studentRepo.save(student);
   }
 
-  async remove(id: number): Promise<{ message: string }> {
-    const student = await this.findById(id);
+  async remove(id: number, teacherId?: number): Promise<{ message: string }> {
+    const student = await this.findById(id, teacherId);
     await this.studentRepo.remove(student);
     return { message: `Student ${student.name} deleted` };
   }
 
-  async bulkImport(students: CreateStudentDto[]): Promise<Student[]> {
+  async bulkImport(students: CreateStudentDto[], teacherId?: number): Promise<Student[]> {
     const entities = students.map((dto) =>
-      this.studentRepo.create({ ...dto, status: dto.status || 'Active' }),
+      this.studentRepo.create({ ...dto, status: dto.status || 'Active', teacherId: teacherId || null }),
     );
     try {
       return await this.studentRepo.save(entities);

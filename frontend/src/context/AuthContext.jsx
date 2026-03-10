@@ -7,6 +7,12 @@ export function AuthProvider({ children }) {
   const [adminToken, setAdminToken] = useState(
     () => localStorage.getItem("adminToken") || null
   );
+  const [teacherToken, setTeacherToken] = useState(
+    () => localStorage.getItem("teacherToken") || null
+  );
+  const [teacherSession, setTeacherSession] = useState(
+    () => JSON.parse(localStorage.getItem("teacherSession") || "null")
+  );
   const [studentSession, setStudentSession] = useState(
     () => JSON.parse(localStorage.getItem("studentSession") || "null")
   );
@@ -19,6 +25,20 @@ export function AuthProvider({ children }) {
   const adminLogout = () => {
     setAdminToken(null);
     localStorage.removeItem("adminToken");
+  };
+
+  const teacherLogin = (token, teacher) => {
+    setTeacherToken(token);
+    setTeacherSession(teacher);
+    localStorage.setItem("teacherToken", token);
+    localStorage.setItem("teacherSession", JSON.stringify(teacher));
+  };
+
+  const teacherLogout = () => {
+    setTeacherToken(null);
+    setTeacherSession(null);
+    localStorage.removeItem("teacherToken");
+    localStorage.removeItem("teacherSession");
   };
 
   const studentLogin = (student) => {
@@ -35,11 +55,16 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         adminToken,
+        teacherToken,
+        teacherSession,
         studentSession,
         isAdminLoggedIn: !!adminToken,
+        isTeacherLoggedIn: !!teacherToken,
         isStudentLoggedIn: !!studentSession,
         adminLogin,
         adminLogout,
+        teacherLogin,
+        teacherLogout,
         studentLogin,
         studentLogout,
       }}

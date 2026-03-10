@@ -7,6 +7,7 @@ import {
     ParseIntPipe,
     Post,
     Put,
+    Req,
     UploadedFile,
     UseGuards,
     UseInterceptors,
@@ -23,20 +24,26 @@ import { StudentsService } from './students.service';
 export class StudentsController {
   constructor(private readonly studentsService: StudentsService) {}
 
+  private getTeacherId(req: any): number | undefined {
+    return req.user?.role === 'teacher' ? req.user.sub : undefined;
+  }
+
   @Get()
-  findAll() {
-    return this.studentsService.findAll();
+  @UseGuards(AuthGuard('jwt'))
+  findAll(@Req() req) {
+    return this.studentsService.findAll(this.getTeacherId(req));
   }
 
   @Get(':id')
-  findById(@Param('id', ParseIntPipe) id: number) {
-    return this.studentsService.findById(id);
+  @UseGuards(AuthGuard('jwt'))
+  findById(@Param('id', ParseIntPipe) id: number, @Req() req) {
+    return this.studentsService.findById(id, this.getTeacherId(req));
   }
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
-  create(@Body() dto: CreateStudentDto) {
-    return this.studentsService.create(dto);
+  create(@Body() dto: CreateStudentDto, @Req() req) {
+    return this.studentsService.create(dto, this.getTeacherId(req));
   }
 
   @Put(':id')
@@ -44,20 +51,21 @@ export class StudentsController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateStudentDto,
+    @Req() req,
   ) {
-    return this.studentsService.update(id, dto);
+    return this.studentsService.update(id, dto, this.getTeacherId(req));
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'))
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.studentsService.remove(id);
+  remove(@Param('id', ParseIntPipe) id: number, @Req() req) {
+    return this.studentsService.remove(id, this.getTeacherId(req));
   }
 
   @Post('bulk-import')
   @UseGuards(AuthGuard('jwt'))
-  bulkImport(@Body() students: CreateStudentDto[]) {
-    return this.studentsService.bulkImport(students);
+  bulkImport(@Body() students: CreateStudentDto[], @Req() req) {
+    return this.studentsService.bulkImport(students, this.getTeacherId(req));
   }
 
   @Post(':id/photo')
@@ -84,8 +92,9 @@ export class StudentsController {
   async uploadPhoto(
     @Param('id', ParseIntPipe) id: number,
     @UploadedFile() file: Express.Multer.File,
+    @Req() req,
   ) {
     const photoPath = `/uploads/profiles/${file.filename}`;
-    return this.studentsService.update(id, { profilePhoto: photoPath });
+    return this.studentsService.update(id, { profilePhoto: photoPath }, this.getTeacherId(req));
   }
 }

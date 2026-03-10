@@ -5,8 +5,10 @@ import { useAuth } from "../context/AuthContext";
 // Auth Pages
 import AdminLogin from "../pages/auth/AdminLogin";
 import StudentLogin from "../pages/auth/StudentLogin";
+import TeacherLogin from "../pages/auth/TeacherLogin";
+import TeacherRegister from "../pages/auth/TeacherRegister";
 
-// Admin Pages
+// Admin/Teacher Pages
 import Dashboard from "../pages/dashboard/Dashboard";
 import Leaderboard from "../pages/leaderboard/Leaderboard";
 import AddStudent from "../pages/students/AddStudent";
@@ -36,9 +38,9 @@ function AdminLayout({ children }) {
   );
 }
 
-function ProtectedAdminRoute({ children }) {
-  const { isAdminLoggedIn } = useAuth();
-  if (!isAdminLoggedIn) return <Navigate to="/admin-login" replace />;
+function ProtectedDashboardRoute({ children }) {
+  const { isAdminLoggedIn, isTeacherLoggedIn } = useAuth();
+  if (!isAdminLoggedIn && !isTeacherLoggedIn) return <Navigate to="/admin-login" replace />;
   return <AdminLayout>{children}</AdminLayout>;
 }
 
@@ -56,26 +58,28 @@ export default function AppRoutes() {
 
       {/* Auth Routes */}
       <Route path="/admin-login" element={<AdminLogin />} />
+      <Route path="/teacher-login" element={<TeacherLogin />} />
+      <Route path="/teacher-register" element={<TeacherRegister />} />
       <Route path="/student-login" element={<StudentLogin />} />
 
-      {/* Admin Protected Routes */}
+      {/* Admin & Teacher Protected Routes */}
       <Route path="/dashboard" element={
-        <ProtectedAdminRoute><Dashboard /></ProtectedAdminRoute>
+        <ProtectedDashboardRoute><Dashboard /></ProtectedDashboardRoute>
       } />
       <Route path="/students" element={
-        <ProtectedAdminRoute><StudentsList /></ProtectedAdminRoute>
+        <ProtectedDashboardRoute><StudentsList /></ProtectedDashboardRoute>
       } />
       <Route path="/students/add" element={
-        <ProtectedAdminRoute><AddStudent /></ProtectedAdminRoute>
+        <ProtectedDashboardRoute><AddStudent /></ProtectedDashboardRoute>
       } />
       <Route path="/students/edit/:id" element={
-        <ProtectedAdminRoute><EditStudent /></ProtectedAdminRoute>
+        <ProtectedDashboardRoute><EditStudent /></ProtectedDashboardRoute>
       } />
       <Route path="/students/:id" element={
-        <ProtectedAdminRoute><StudentProfile /></ProtectedAdminRoute>
+        <ProtectedDashboardRoute><StudentProfile /></ProtectedDashboardRoute>
       } />
       <Route path="/leaderboard" element={
-        <ProtectedAdminRoute><Leaderboard /></ProtectedAdminRoute>
+        <ProtectedDashboardRoute><Leaderboard /></ProtectedDashboardRoute>
       } />
 
       {/* Student Protected Routes */}

@@ -4,13 +4,14 @@ import { StudentsService } from './students.service';
 export declare class StudentsController {
     private readonly studentsService;
     constructor(studentsService: StudentsService);
-    findAll(): Promise<import("./student.entity").Student[]>;
-    findById(id: number): Promise<import("./student.entity").Student>;
-    create(dto: CreateStudentDto): Promise<import("./student.entity").Student>;
-    update(id: number, dto: UpdateStudentDto): Promise<import("./student.entity").Student>;
-    remove(id: number): Promise<{
+    private getTeacherId;
+    findAll(req: any): Promise<import("./student.entity").Student[]>;
+    findById(id: number, req: any): Promise<import("./student.entity").Student>;
+    create(dto: CreateStudentDto, req: any): Promise<import("./student.entity").Student>;
+    update(id: number, dto: UpdateStudentDto, req: any): Promise<import("./student.entity").Student>;
+    remove(id: number, req: any): Promise<{
         message: string;
     }>;
-    bulkImport(students: CreateStudentDto[]): Promise<import("./student.entity").Student[]>;
-    uploadPhoto(id: number, file: Express.Multer.File): Promise<import("./student.entity").Student>;
+    bulkImport(students: CreateStudentDto[], req: any): Promise<import("./student.entity").Student[]>;
+    uploadPhoto(id: number, file: Express.Multer.File, req: any): Promise<import("./student.entity").Student>;
 }

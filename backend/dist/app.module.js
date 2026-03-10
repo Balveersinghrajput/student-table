@@ -13,6 +13,8 @@ const typeorm_1 = require("@nestjs/typeorm");
 const auth_module_1 = require("./auth/auth.module");
 const student_entity_1 = require("./students/student.entity");
 const students_module_1 = require("./students/students.module");
+const teacher_entity_1 = require("./teachers/teacher.entity");
+const teachers_module_1 = require("./teachers/teachers.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -30,11 +32,12 @@ exports.AppModule = AppModule = __decorate([
                     username: config.get('DB_USERNAME', 'postgres'),
                     password: config.get('DB_PASSWORD', 'postgres'),
                     database: config.get('DB_NAME', 'student_db'),
-                    entities: [student_entity_1.Student],
+                    entities: [student_entity_1.Student, teacher_entity_1.Teacher],
                     synchronize: true,
                 }),
             }),
             students_module_1.StudentsModule,
+            teachers_module_1.TeachersModule,
             auth_module_1.AuthModule,
         ],
     })

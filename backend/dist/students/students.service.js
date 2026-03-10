@@ -21,13 +21,17 @@ let StudentsService = class StudentsService {
     constructor(studentRepo) {
         this.studentRepo = studentRepo;
     }
-    async findAll() {
-        return this.studentRepo.find({ order: { createdAt: 'DESC' } });
+    async findAll(teacherId) {
+        const where = teacherId ? { teacherId } : {};
+        return this.studentRepo.find({ where, order: { createdAt: 'DESC' } });
     }
-    async findById(id) {
+    async findById(id, teacherId) {
         const student = await this.studentRepo.findOneBy({ id });
         if (!student)
             throw new common_1.NotFoundException('Student not found');
+        if (teacherId && student.teacherId !== teacherId) {
+            throw new common_1.ForbiddenException('You can only access your own students');
+        }
         return student;
     }
     async findByStudentId(studentId) {
@@ -36,7 +40,7 @@ let StudentsService = class StudentsService {
             throw new common_1.NotFoundException('Student not found');
         return student;
     }
-    async create(dto) {
+    async create(dto, teacherId) {
         const existing = await this.studentRepo.findOneBy({ studentId: dto.studentId });
         if (existing) {
             throw new common_1.ConflictException(`Student with ID '${dto.studentId}' already exists`);
@@ -44,21 +48,22 @@ let StudentsService = class StudentsService {
         const student = this.studentRepo.create({
             ...dto,
             status: dto.status || 'Active',
+            teacherId: teacherId || null,
         });
         return this.studentRepo.save(student);
     }
-    async update(id, dto) {
-        const student = await this.findById(id);
+    async update(id, dto, teacherId) {
+        const student = await this.findById(id, teacherId);
         Object.assign(student, dto);
         return this.studentRepo.save(student);
     }
-    async remove(id) {
-        const student = await this.findById(id);
+    async remove(id, teacherId) {
+        const student = await this.findById(id, teacherId);
         await this.studentRepo.remove(student);
         return { message: `Student ${student.name} deleted` };
     }
-    async bulkImport(students) {
-        const entities = students.map((dto) => this.studentRepo.create({ ...dto, status: dto.status || 'Active' }));
+    async bulkImport(students, teacherId) {
+        const entities = students.map((dto) => this.studentRepo.create({ ...dto, status: dto.status || 'Active', teacherId: teacherId || null }));
         try {
             return await this.studentRepo.save(entities);
         }

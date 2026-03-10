@@ -66,7 +66,10 @@ export default function AdminLogin() {
         </form>
 
         <p style={{ textAlign: "center", marginTop: 20, color: "#64748b", fontSize: 12 }}>
-          Are you a student? <Link to="/student-login" style={{ color: "#3b82f6", textDecoration: "none", fontWeight: 600 }}>Student Login →</Link>
+          Are you a teacher? <Link to="/teacher-login" style={{ color: "#8b5cf6", textDecoration: "none", fontWeight: 600 }}>Teacher Login →</Link>
+        </p>
+        <p style={{ textAlign: "center", marginTop: 8, color: "#64748b", fontSize: 12 }}>
+          Are you a student? <Link to="/student-login" style={{ color: "#10b981", textDecoration: "none", fontWeight: 600 }}>Student Login →</Link>
         </p>
       </div>
     </div>

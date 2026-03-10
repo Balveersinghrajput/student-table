@@ -9,7 +9,7 @@ const api = axios.create({
 
 // Attach token to every request automatically
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("adminToken");
+  const token = localStorage.getItem("adminToken") || localStorage.getItem("teacherToken");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -22,7 +22,13 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem("adminToken");
-      window.location.href = "/admin-login";
+      localStorage.removeItem("teacherToken");
+      localStorage.removeItem("teacherSession");
+      // Only redirect if not already on a login/register page to avoid reload loop
+      const path = window.location.pathname;
+      if (!path.includes("login") && !path.includes("register")) {
+        window.location.href = "/admin-login";
+      }
     }
     return Promise.reject(error);
   }

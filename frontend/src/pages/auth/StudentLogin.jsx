@@ -55,6 +55,9 @@ export default function StudentLogin() {
         <p style={{ textAlign: "center", marginTop: 20, color: "#64748b", fontSize: 12 }}>
           Are you an admin? <Link to="/admin-login" style={{ color: "#3b82f6", textDecoration: "none", fontWeight: 600 }}>Admin Login →</Link>
         </p>
+        <p style={{ textAlign: "center", marginTop: 8, color: "#64748b", fontSize: 12 }}>
+          Are you a teacher? <Link to="/teacher-login" style={{ color: "#8b5cf6", textDecoration: "none", fontWeight: 600 }}>Teacher Login →</Link>
+        </p>
       </div>
     </div>
   );

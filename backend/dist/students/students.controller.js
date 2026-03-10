@@ -25,49 +25,57 @@ let StudentsController = class StudentsController {
     constructor(studentsService) {
         this.studentsService = studentsService;
     }
-    findAll() {
-        return this.studentsService.findAll();
+    getTeacherId(req) {
+        return req.user?.role === 'teacher' ? req.user.sub : undefined;
     }
-    findById(id) {
-        return this.studentsService.findById(id);
+    findAll(req) {
+        return this.studentsService.findAll(this.getTeacherId(req));
     }
-    create(dto) {
-        return this.studentsService.create(dto);
+    findById(id, req) {
+        return this.studentsService.findById(id, this.getTeacherId(req));
     }
-    update(id, dto) {
-        return this.studentsService.update(id, dto);
+    create(dto, req) {
+        return this.studentsService.create(dto, this.getTeacherId(req));
     }
-    remove(id) {
-        return this.studentsService.remove(id);
+    update(id, dto, req) {
+        return this.studentsService.update(id, dto, this.getTeacherId(req));
     }
-    bulkImport(students) {
-        return this.studentsService.bulkImport(students);
+    remove(id, req) {
+        return this.studentsService.remove(id, this.getTeacherId(req));
     }
-    async uploadPhoto(id, file) {
+    bulkImport(students, req) {
+        return this.studentsService.bulkImport(students, this.getTeacherId(req));
+    }
+    async uploadPhoto(id, file, req) {
         const photoPath = `/uploads/profiles/${file.filename}`;
-        return this.studentsService.update(id, { profilePhoto: photoPath });
+        return this.studentsService.update(id, { profilePhoto: photoPath }, this.getTeacherId(req));
     }
 };
 exports.StudentsController = StudentsController;
 __decorate([
     (0, common_1.Get)(),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], StudentsController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", void 0)
 ], StudentsController.prototype, "findById", null);
 __decorate([
     (0, common_1.Post)(),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_student_dto_1.CreateStudentDto]),
+    __metadata("design:paramtypes", [create_student_dto_1.CreateStudentDto, Object]),
     __metadata("design:returntype", void 0)
 ], StudentsController.prototype, "create", null);
 __decorate([
@@ -75,24 +83,27 @@ __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, update_student_dto_1.UpdateStudentDto]),
+    __metadata("design:paramtypes", [Number, update_student_dto_1.UpdateStudentDto, Object]),
     __metadata("design:returntype", void 0)
 ], StudentsController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", void 0)
 ], StudentsController.prototype, "remove", null);
 __decorate([
     (0, common_1.Post)('bulk-import'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array]),
+    __metadata("design:paramtypes", [Array, Object]),
     __metadata("design:returntype", void 0)
 ], StudentsController.prototype, "bulkImport", null);
 __decorate([
@@ -118,8 +129,9 @@ __decorate([
     })),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.UploadedFile)()),
+    __param(2, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:paramtypes", [Number, Object, Object]),
     __metadata("design:returntype", Promise)
 ], StudentsController.prototype, "uploadPhoto", null);
 exports.StudentsController = StudentsController = __decorate([
