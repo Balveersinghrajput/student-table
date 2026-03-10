@@ -10,9 +10,13 @@ async function bootstrap() {
   // Serve uploaded profile photos as static files
   app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/uploads' });
 
-  // Enable CORS for frontend on localhost:5173
+  // Enable CORS for frontend
   app.enableCors({
-    origin: ['http://localhost:5173', 'http://localhost:4173'],
+    origin: [
+      'http://localhost:5173',
+      'http://localhost:4173',
+      process.env.FRONTEND_URL,
+    ].filter(Boolean),
     credentials: true,
   });
 
@@ -25,7 +29,8 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(3000);
-  console.log('🚀 Backend running on http://localhost:3000');
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
+  console.log(`🚀 Backend running on port ${port}`);
 }
 bootstrap();

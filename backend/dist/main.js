@@ -8,7 +8,11 @@ async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.useStaticAssets((0, path_1.join)(process.cwd(), 'uploads'), { prefix: '/uploads' });
     app.enableCors({
-        origin: ['http://localhost:5173', 'http://localhost:4173'],
+        origin: [
+            'http://localhost:5173',
+            'http://localhost:4173',
+            process.env.FRONTEND_URL,
+        ].filter(Boolean),
         credentials: true,
     });
     app.useGlobalPipes(new common_1.ValidationPipe({
@@ -16,8 +20,9 @@ async function bootstrap() {
         transform: true,
         transformOptions: { enableImplicitConversion: true },
     }));
-    await app.listen(3000);
-    console.log('🚀 Backend running on http://localhost:3000');
+    const port = process.env.PORT || 3000;
+    await app.listen(port);
+    console.log(`🚀 Backend running on port ${port}`);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map
