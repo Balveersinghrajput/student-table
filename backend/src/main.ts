@@ -11,12 +11,25 @@ async function bootstrap() {
   app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/uploads' });
 
   // Enable CORS for frontend
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:4173',
+    process.env.FRONTEND_URL,
+  ].filter(Boolean);
+
   app.enableCors({
-    origin: [
-      'http://localhost:5173',
-      'http://localhost:4173',
-      process.env.FRONTEND_URL,
-    ].filter(Boolean),
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, curl, etc.)
+      if (!origin) return callback(null, true);
+      // Allow any Vercel preview/production URL for this project
+      if (
+        allowedOrigins.includes(origin) ||
+        origin.endsWith('.vercel.app')
+      ) {
+        return callback(null, true);
+      }
+      callback(null, false);
+    },
     credentials: true,
   });
 

@@ -7,12 +7,21 @@ const app_module_1 = require("./app.module");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.useStaticAssets((0, path_1.join)(process.cwd(), 'uploads'), { prefix: '/uploads' });
+    const allowedOrigins = [
+        'http://localhost:5173',
+        'http://localhost:4173',
+        process.env.FRONTEND_URL,
+    ].filter(Boolean);
     app.enableCors({
-        origin: [
-            'http://localhost:5173',
-            'http://localhost:4173',
-            process.env.FRONTEND_URL,
-        ].filter(Boolean),
+        origin: (origin, callback) => {
+            if (!origin)
+                return callback(null, true);
+            if (allowedOrigins.includes(origin) ||
+                origin.endsWith('.vercel.app')) {
+                return callback(null, true);
+            }
+            callback(null, false);
+        },
         credentials: true,
     });
     app.useGlobalPipes(new common_1.ValidationPipe({
