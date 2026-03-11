@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Avatar from "../../components/common/Avatar";
 import Loader from "../../components/common/Loader";
 import { studentService } from "../../services/studentService";
 import { ranking } from "../../utils/ranking";
-import Avatar from "../../components/common/Avatar";
 import "./StudentProfile.css";
 
 export default function StudentProfile() {
@@ -22,8 +22,14 @@ export default function StudentProfile() {
         const ranked = ranking.getRankedList(all);
         const withRank = ranked.find((s) => String(s.id) === String(id)) || { ...current, rank: null };
         setStudent(withRank);
-      } catch {
-        navigate("/students");
+      } catch (err) {
+        // If only getAll failed, try with just the single student
+        try {
+          const current = await studentService.getById(id);
+          setStudent({ ...current, rank: null });
+        } catch {
+          navigate("/students");
+        }
       } finally {
         setLoading(false);
       }

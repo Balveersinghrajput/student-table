@@ -4,10 +4,14 @@ import { useState } from "react";
  * Avatar component — shows uploaded profile photo if available,
  * otherwise falls back to initial letter circle.
  */
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
 export default function Avatar({ profilePhoto, name, size = 34, style }) {
   const [imgError, setImgError] = useState(false);
   const initial = name?.charAt(0)?.toUpperCase() || "?";
-  const url = profilePhoto ? `http://localhost:3000${profilePhoto}` : null;
+  const url = profilePhoto
+    ? (profilePhoto.startsWith("http") ? profilePhoto : `${API_BASE}${profilePhoto}`)
+    : null;
 
   const base = {
     width: size,

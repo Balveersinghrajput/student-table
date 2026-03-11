@@ -1,13 +1,15 @@
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import Avatar from "../../components/common/Avatar";
 import EmptyState from "../../components/common/EmptyState";
 import Loader from "../../components/common/Loader";
 import { useStudents } from "../../context/StudentContext";
 import { excelHelper } from "../../utils/excelHelper";
 import { ranking } from "../../utils/ranking";
-import Avatar from "../../components/common/Avatar";
 
 export default function Leaderboard() {
   const { students, loading } = useStudents();
+  const navigate = useNavigate();
   if (loading) return <Loader text="Loading leaderboard..." />;
 
   const ranked = ranking.getRankedList(students);
@@ -76,7 +78,7 @@ export default function Leaderboard() {
                   const isTop = s.rank <= 3;
                   const pc = podiumColors[s.rank];
                   return (
-                    <tr key={s.id} style={{ background: pc ? pc.bg + "66" : "transparent", cursor: "default" }}>
+                    <tr key={s.id} onClick={() => navigate("/students/" + s.id)} style={{ background: pc ? pc.bg + "66" : "transparent", cursor: "pointer" }}>
                       <td>
                         <span style={{ fontSize: isTop ? 18 : 13, color: pc ? pc.text : "#64748b", fontWeight: 700 }}>
                           {ranking.getMedalEmoji(s.rank)}
