@@ -21,7 +21,7 @@ export default function LeaderboardTable({ students }) {
                 <td style={{ fontSize: 16 }}>{ranking.getMedalEmoji(s.rank)}</td>
                 <td>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <Avatar profilePhoto={s.profilePhoto} name={s.name} size={30} />
+                    <Avatar profilePhoto={s.profilePhoto} name={s.name} email={s.email} size={30} />
                     <span style={{ color: "#1e293b", fontWeight: 600, fontSize: 13 }}>{s.name}</span>
                   </div>
                 </td>

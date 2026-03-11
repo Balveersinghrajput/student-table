@@ -72,7 +72,7 @@ export default function StudentProfile() {
         <div className="prof-hero-bg" />
         <div className="prof-hero-content">
           <div className="prof-avatar">
-            <Avatar profilePhoto={student.profilePhoto} name={student.name} size={80} />
+            <Avatar profilePhoto={student.profilePhoto} name={student.name} email={student.email} size={80} />
             <div className={`prof-dot ${student.status === "Active" ? "on" : "off"}`} />
           </div>
           <div className="prof-hero-info">

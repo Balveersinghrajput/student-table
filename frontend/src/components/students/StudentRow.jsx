@@ -12,7 +12,7 @@ export default function StudentRow({ student, onDelete }) {
       onClick={() => navigate(`/students/${student.id}`)}>
       <td style={{ padding: "10px 14px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <Avatar profilePhoto={student.profilePhoto} name={student.name} size={34} />
+          <Avatar profilePhoto={student.profilePhoto} name={student.name} email={student.email} size={34} />
           <span style={{ color: "#1e293b", fontWeight: 600, fontSize: 13 }}>{student.name}</span>
         </div>
       </td>

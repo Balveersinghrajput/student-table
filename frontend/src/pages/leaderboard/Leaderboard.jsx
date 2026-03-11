@@ -48,7 +48,7 @@ export default function Leaderboard() {
                 transform: r === 1 ? "translateY(-6px)" : "none",
               }}>
                 <div style={{ fontSize: 32, marginBottom: 6 }}>{ranking.getMedalEmoji(r)}</div>
-                <Avatar profilePhoto={s.profilePhoto} name={s.name} size={44} style={{ margin: "0 auto 10px" }} />
+                <Avatar profilePhoto={s.profilePhoto} name={s.name} email={s.email} size={44} style={{ margin: "0 auto 10px" }} />
                 <div style={{ color: "#1e293b", fontWeight: 600, fontSize: 14, marginBottom: 2 }}>{s.name}</div>
                 <div style={{ color: "#94a3b8", fontSize: 11, marginBottom: 8 }}>{s.studentId}</div>
                 <div style={{ color: c.text, fontWeight: 700, fontSize: 22 }}>{s.totalMarks}</div>
@@ -86,7 +86,7 @@ export default function Leaderboard() {
                       </td>
                       <td>
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <Avatar profilePhoto={s.profilePhoto} name={s.name} size={30} />
+                          <Avatar profilePhoto={s.profilePhoto} name={s.name} email={s.email} size={30} />
                           <div>
                             <div style={{ color: "#1e293b", fontWeight: 600, fontSize: 13 }}>{s.name}</div>
                             <div style={{ color: "#94a3b8", fontSize: 10 }}>{s.studentId}</div>

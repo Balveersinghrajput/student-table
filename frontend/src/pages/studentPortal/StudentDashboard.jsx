@@ -79,7 +79,7 @@ export default function StudentDashboard() {
       <div className="sd-content">
         {/* Profile Card */}
         <div className="card fade-in sd-profile">
-          <Avatar profilePhoto={myData.profilePhoto} name={myData.name} size={50} />
+          <Avatar profilePhoto={myData.profilePhoto} name={myData.name} email={myData.email} size={50} />
           <div style={{ flex: 1, minWidth: 0 }}>
             <h2 className="sd-name">{myData.name}</h2>
             <p className="sd-meta">{myData.studentId} · {myData.className ? myData.className + " · " : ""}{myData.email}</p>

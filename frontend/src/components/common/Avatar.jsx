@@ -1,17 +1,20 @@
 import { useState } from "react";
+import { getAvatarUrl } from "../../utils/gravatar";
 
 /**
  * Avatar component — shows uploaded profile photo if available,
- * otherwise falls back to initial letter circle.
+ * falls back to gravatar, then to initial letter circle.
  */
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
-export default function Avatar({ profilePhoto, name, size = 34, style }) {
+export default function Avatar({ profilePhoto, name, email, size = 34, style }) {
   const [imgError, setImgError] = useState(false);
   const initial = name?.charAt(0)?.toUpperCase() || "?";
-  const url = profilePhoto
+  const uploadedUrl = profilePhoto
     ? (profilePhoto.startsWith("http") ? profilePhoto : `${API_BASE}${profilePhoto}`)
     : null;
+  const gravatarUrl = email ? getAvatarUrl(email, size) : null;
+  const url = uploadedUrl || gravatarUrl;
 
   const base = {
     width: size,

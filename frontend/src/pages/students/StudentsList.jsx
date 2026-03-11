@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import Avatar from "../../components/common/Avatar";
 import EmptyState from "../../components/common/EmptyState";
 import Loader from "../../components/common/Loader";
 import Pagination from "../../components/common/Pagination";
@@ -8,7 +9,6 @@ import DeleteModal from "../../components/students/DeleteModal";
 import { useStudents } from "../../context/StudentContext";
 import { studentService } from "../../services/studentService";
 import { ranking } from "../../utils/ranking";
-import Avatar from "../../components/common/Avatar";
 
 const PER_PAGE = 8;
 
@@ -91,7 +91,7 @@ export default function StudentsList() {
                     <tr key={s.id} onClick={() => navigate("/students/" + s.id)} style={{ cursor: "pointer" }}>
                       <td>
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <Avatar profilePhoto={s.profilePhoto} name={s.name} size={34} />
+                          <Avatar profilePhoto={s.profilePhoto} name={s.name} email={s.email} size={34} />
                           <span style={{ color: "#1e293b", fontWeight: 600, fontSize: 13 }}>{s.name}</span>
                         </div>
                       </td>

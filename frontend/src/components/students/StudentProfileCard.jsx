@@ -10,7 +10,7 @@ export default function StudentProfileCard({ student }) {
 
   return (
     <div className="card" style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
-      <Avatar profilePhoto={student.profilePhoto} name={student.name} size={56} />
+      <Avatar profilePhoto={student.profilePhoto} name={student.name} email={student.email} size={56} />
       <div style={{ flex: 1 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 4 }}>
           <h2 style={{ color: "#1e293b", fontSize: 18, fontWeight: 700 }}>{student.name}</h2>
