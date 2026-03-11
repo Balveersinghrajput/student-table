@@ -1,36 +1,43 @@
-import "./StudentDashboard.css";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { useAuth } from "../../context/AuthContext";
-import { ranking } from "../../utils/ranking";
-import { authService } from "../../services/authService";
 import Avatar from "../../components/common/Avatar";
 import Loader from "../../components/common/Loader";
+import { useAuth } from "../../context/AuthContext";
+import { authService } from "../../services/authService";
+import { ranking } from "../../utils/ranking";
+import "./StudentDashboard.css";
 
 export default function StudentDashboard() {
   const { studentSession, studentLogin, studentLogout } = useAuth();
   const [myData, setMyData] = useState(studentSession);
-  const [loadingData, setLoadingData] = useState(true);
+  const [loadingData, setLoadingData] = useState(!studentSession);
   const navigate = useNavigate();
 
   const handleLogout = () => { studentLogout(); toast.success("Logged out"); navigate("/student-login"); };
 
-  // Fetch fresh student data on mount and after refresh
+  // Fetch fresh student data on mount — show cached data immediately, refresh in background
   useEffect(() => {
-    if (!studentSession) return;
-    setLoadingData(true);
+    if (!studentSession?.studentId) return;
+    let cancelled = false;
     authService.studentLogin(studentSession.studentId)
       .then((data) => {
-        setMyData(data.student);
-        studentLogin(data.student);
+        if (!cancelled && data?.student) {
+          setMyData(data.student);
+          studentLogin(data.student);
+        }
       })
       .catch(() => {
-        setMyData(studentSession);
+        // API failed — keep cached data
+        if (!cancelled) setMyData(prev => prev || studentSession);
       })
-      .finally(() => setLoadingData(false));
-  }, [studentSession?.id]);
+      .finally(() => {
+        if (!cancelled) setLoadingData(false);
+      });
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!studentSession) return null;
   if (loadingData) return <Loader text="Loading your profile..." />;
