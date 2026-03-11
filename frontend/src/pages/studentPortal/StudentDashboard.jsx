@@ -6,6 +6,7 @@ import Avatar from "../../components/common/Avatar";
 import Loader from "../../components/common/Loader";
 import { useAuth } from "../../context/AuthContext";
 import { authService } from "../../services/authService";
+import { studentService } from "../../services/studentService";
 import { ranking } from "../../utils/ranking";
 import "./StudentDashboard.css";
 
@@ -13,6 +14,7 @@ export default function StudentDashboard() {
   const { studentSession, studentLogin, studentLogout } = useAuth();
   const [myData, setMyData] = useState(studentSession);
   const [loadingData, setLoadingData] = useState(!studentSession);
+  const [ranked, setRanked] = useState([]);
   const navigate = useNavigate();
 
   const handleLogout = () => { studentLogout(); toast.success("Logged out"); navigate("/student-login"); };
@@ -35,6 +37,12 @@ export default function StudentDashboard() {
       .finally(() => {
         if (!cancelled) setLoadingData(false);
       });
+    // Fetch all students for leaderboard
+    studentService.getAll()
+      .then((all) => {
+        if (!cancelled) setRanked(ranking.getRankedList(all));
+      })
+      .catch(() => {});
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
